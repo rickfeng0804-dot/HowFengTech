@@ -22,7 +22,7 @@ export default function App() {
   const defaultSheetUrl = 'https://docs.google.com/spreadsheets/d/1sdHSVVOYf47r84f9R7KV8iqWf_q5LMSkLzNMdWdpCi8/edit?usp=sharing';
   const defaultCaseSheetUrl = 'https://docs.google.com/spreadsheets/d/1FMNk9vTDuV4uyue4of1Db-kjrrgHByoj1rZKD5WvUfA/edit?usp=sharing';
   const defaultContactSheetUrl = 'https://script.google.com/macros/s/AKfycbxb5lIhIvt219dZpXmo6cWyuXTiC94iMcZe_GRiYsg36NbNuO9L76_UJ7FeUQtMbnfy6A/exec';
-  const defaultContactEmail = 'rickfeng0804@gmail.com';
+  const defaultContactDataSheetUrl = 'https://docs.google.com/spreadsheets/d/1ckIxswQ-AeM83oCpNSQpk6S2YB1vpGJuk0YOkAItSc4/edit?usp=sharing';
   
   const [sheetUrl, setSheetUrl] = useState(() => {
     return localStorage.getItem('productSheetUrl') || defaultSheetUrl;
@@ -33,8 +33,8 @@ export default function App() {
   const [contactSheetUrl, setContactSheetUrl] = useState(() => {
     return localStorage.getItem('contactSheetUrl') || defaultContactSheetUrl;
   });
-  const [contactEmail, setContactEmail] = useState(() => {
-    return localStorage.getItem('contactEmail') || defaultContactEmail;
+  const [contactDataSheetUrl, setContactDataSheetUrl] = useState(() => {
+    return localStorage.getItem('contactDataSheetUrl') || defaultContactDataSheetUrl;
   });
   
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -45,7 +45,7 @@ export default function App() {
   const [tempUrl, setTempUrl] = useState(sheetUrl);
   const [tempCaseUrl, setTempCaseUrl] = useState(caseSheetUrl);
   const [tempContactUrl, setTempContactUrl] = useState(contactSheetUrl);
-  const [tempContactEmail, setTempContactEmail] = useState(contactEmail);
+  const [tempContactDataSheetUrl, setTempContactDataSheetUrl] = useState(contactDataSheetUrl);
 
   const [contactForm, setContactForm] = useState({
     companyName: '',
@@ -70,6 +70,7 @@ export default function App() {
       setTempUrl(sheetUrl);
       setTempCaseUrl(caseSheetUrl);
       setTempContactUrl(contactSheetUrl);
+      setTempContactDataSheetUrl(contactDataSheetUrl);
       setSettingsOpen(true);
     } else {
       setPasswordError('密碼錯誤，請重新輸入');
@@ -83,8 +84,8 @@ export default function App() {
     localStorage.setItem('caseSheetUrl', tempCaseUrl);
     setContactSheetUrl(tempContactUrl);
     localStorage.setItem('contactSheetUrl', tempContactUrl);
-    setContactEmail(tempContactEmail);
-    localStorage.setItem('contactEmail', tempContactEmail);
+    setContactDataSheetUrl(tempContactDataSheetUrl);
+    localStorage.setItem('contactDataSheetUrl', tempContactDataSheetUrl);
     setSettingsOpen(false);
   };
 
@@ -120,7 +121,6 @@ export default function App() {
         params.append('email', contactForm.email);
         params.append('description', contactForm.description);
         params.append('timestamp', formattedTime);
-        params.append('targetEmail', contactEmail);
 
         const urlWithParams = `${contactSheetUrl}?${params.toString()}`;
 
@@ -680,18 +680,28 @@ export default function App() {
                   />
                 </div>
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    接收通知 Email (聯絡表單)
-                  </label>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      聯絡表單 Google Sheet URL
+                    </label>
+                    <a 
+                      href={tempContactDataSheetUrl || defaultContactDataSheetUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1 font-medium transition-colors"
+                    >
+                      <ExternalLink size={14} /> 前往查看資料
+                    </a>
+                  </div>
                   <input
-                    type="email"
-                    value={tempContactEmail}
-                    onChange={(e) => setTempContactEmail(e.target.value)}
+                    type="text"
+                    value={tempContactDataSheetUrl}
+                    onChange={(e) => setTempContactDataSheetUrl(e.target.value)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                    placeholder="your-email@example.com"
+                    placeholder="https://docs.google.com/spreadsheets/d/..."
                   />
                   <p className="text-xs text-gray-500 mt-2">
-                    當有新表單送出時，系統將會寄送通知信至此信箱。
+                    這是儲存聯絡表單資料的 Google Sheet，您可以在此點擊連結前往查看客戶留言。
                   </p>
                 </div>
                 <div className="flex justify-end gap-3 mt-8">
