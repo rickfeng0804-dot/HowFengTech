@@ -170,9 +170,6 @@ export default function App() {
       >
         <div className="container mx-auto px-4 md:px-6 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 md:w-16 md:h-16 bg-blue-700 rounded-xl flex items-center justify-center text-white font-black text-2xl md:text-4xl">
-              豪
-            </div>
             <span className="text-3xl md:text-5xl font-black text-blue-900 tracking-tight">
               豪豐科技有限公司
             </span>
@@ -438,9 +435,6 @@ export default function App() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
             <div className="col-span-1 lg:col-span-1">
               <div className="flex items-center gap-2 mb-6">
-                <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white font-bold text-sm">
-                  豪
-                </div>
                 <div className="flex flex-col">
                   <span className="text-xl font-bold text-white tracking-tight">
                     豪豐科技有限公司
