@@ -21,7 +21,7 @@ export default function App() {
 
   const defaultSheetUrl = 'https://docs.google.com/spreadsheets/d/1sdHSVVOYf47r84f9R7KV8iqWf_q5LMSkLzNMdWdpCi8/edit?usp=sharing';
   const defaultCaseSheetUrl = 'https://docs.google.com/spreadsheets/d/1FMNk9vTDuV4uyue4of1Db-kjrrgHByoj1rZKD5WvUfA/edit?usp=sharing';
-  const defaultContactSheetUrl = 'https://script.google.com/macros/s/AKfycby76vdP6mGwNj5Zd1zD5mbrfsuAwOvap9xgpvKgubDgcz3x12AxRNfXoeNkf499xMpZ6g/exec';
+  const defaultContactSheetUrl = 'https://script.google.com/macros/s/AKfycbxb5lIhIvt219dZpXmo6cWyuXTiC94iMcZe_GRiYsg36NbNuO9L76_UJ7FeUQtMbnfy6A/exec';
   const defaultContactEmail = 'rickfeng0804@gmail.com';
   
   const [sheetUrl, setSheetUrl] = useState(() => {
