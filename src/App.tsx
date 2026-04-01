@@ -60,21 +60,11 @@ const cases = [
     title: '蘭陽水力發電廠工程',
     description: '負責發電機組更新及控制系統升級，大幅提升發電效率與運轉穩定性。',
     details: '本專案涵蓋了蘭陽水力發電廠的核心機電設備汰舊換新。我們導入了最新一代的數位化控制系統，不僅提高了發電效率，更強化了系統的自我診斷與保護能力。工程期間克服了地形與天候限制，如期達成台電交付的任務。',
-    gallery: [
-      'https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1466611653911-95081537e5b7?auto=format&fit=crop&w=1200&q=80'
-    ]
   },
   {
     title: '達觀水力發電廠工程',
     description: '參與新建水力發電廠之核心機電設備安裝與測試，確保工程如期如質完工。',
     details: '達觀水力發電廠為近年重要的新建綠能建設。豪豐科技負責其中關鍵的發電機組、變壓器及附屬機電設備的安裝與調試。我們動員了具備豐富經驗的工程團隊，嚴格把關施工品質，確保廠區設備在最高安全標準下順利併網發電。',
-    gallery: [
-      'https://images.unsplash.com/photo-1584483751070-07755866b6c0?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&w=1200&q=80'
-    ]
   },
 ];
 
@@ -82,10 +72,9 @@ export default function App() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedCase, setSelectedCase] = useState<typeof cases[0] | null>(null);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
-    if (selectedCase || selectedImage) {
+    if (selectedCase) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
@@ -93,7 +82,7 @@ export default function App() {
     return () => {
       document.body.style.overflow = 'unset';
     };
-  }, [selectedCase, selectedImage]);
+  }, [selectedCase]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -482,67 +471,8 @@ export default function App() {
                 <p className="text-lg text-gray-600 mb-8 leading-relaxed">
                   {selectedCase.details}
                 </p>
-
-                {selectedCase.gallery && selectedCase.gallery.length > 0 && (
-                  <div>
-                    <h4 className="text-xl font-bold text-gray-900 mb-4">專案圖集</h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {selectedCase.gallery.map((img, idx) => (
-                        <div 
-                          key={idx} 
-                          className="relative aspect-video rounded-lg overflow-hidden cursor-pointer group"
-                          onClick={() => setSelectedImage(img)}
-                        >
-                          <img 
-                            src={img} 
-                            alt={`${selectedCase.title} - Image ${idx + 1}`} 
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                            referrerPolicy="no-referrer"
-                          />
-                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                            <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity font-medium">點擊放大</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Fullscreen Image Lightbox */}
-      <AnimatePresence>
-        {selectedImage && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[110] flex items-center justify-center bg-black/90 p-4 sm:p-8"
-            onClick={() => setSelectedImage(null)}
-          >
-            <button 
-              onClick={(e) => {
-                e.stopPropagation();
-                setSelectedImage(null);
-              }}
-              className="absolute top-4 right-4 sm:top-8 sm:right-8 z-10 w-12 h-12 bg-white/10 hover:bg-white/20 text-white rounded-full flex items-center justify-center backdrop-blur-md transition-colors"
-            >
-              <X size={24} />
-            </button>
-            <motion.img 
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              src={selectedImage} 
-              alt="Full resolution" 
-              className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
-              referrerPolicy="no-referrer"
-              onClick={(e) => e.stopPropagation()}
-            />
           </motion.div>
         )}
       </AnimatePresence>
