@@ -589,9 +589,9 @@ export default function App() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-lg relative z-10 overflow-hidden"
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-lg relative z-10 overflow-hidden flex flex-col max-h-[90vh]"
             >
-              <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+              <div className="p-6 border-b border-gray-100 flex justify-between items-center shrink-0">
                 <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                   <Settings size={20} className="text-blue-700" />
                   系統設定
@@ -603,7 +603,7 @@ export default function App() {
                   <X size={20} />
                 </button>
               </div>
-              <div className="p-6">
+              <div className="p-6 overflow-y-auto">
                 <div className="mb-6">
                   <div className="flex justify-between items-center mb-2">
                     <label className="block text-sm font-medium text-gray-700">
