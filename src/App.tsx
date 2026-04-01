@@ -98,6 +98,9 @@ export default function App() {
     setIsSubmitting(true);
     
     try {
+      const now = new Date();
+      const formattedTime = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+
       // Create FormData to send
       const formData = new FormData();
       formData.append('companyName', contactForm.companyName);
@@ -105,7 +108,7 @@ export default function App() {
       formData.append('phone', contactForm.phone);
       formData.append('email', contactForm.email);
       formData.append('description', contactForm.description);
-      formData.append('timestamp', new Date().toISOString());
+      formData.append('timestamp', formattedTime);
 
       // If the URL is a Google Apps Script Web App, we can send data to it.
       if (contactSheetUrl.includes('script.google.com')) {
@@ -116,7 +119,7 @@ export default function App() {
         params.append('phone', contactForm.phone);
         params.append('email', contactForm.email);
         params.append('description', contactForm.description);
-        params.append('timestamp', new Date().toISOString());
+        params.append('timestamp', formattedTime);
         params.append('targetEmail', contactEmail);
 
         const urlWithParams = `${contactSheetUrl}?${params.toString()}`;
