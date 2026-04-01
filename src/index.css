@@ -1,1 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Roboto:wght@400;700;900&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --font-sans: "Noto Sans TC", "Roboto", ui-sans-serif, system-ui, sans-serif;
+  --color-main: #7db22a;
+  --color-main-hover: #6a9624;
+}
+
+body {
+  font-family: var(--font-sans);
+}

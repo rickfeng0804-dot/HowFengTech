@@ -1,88 +1,148 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  Zap,
-  Battery,
-  Droplet,
-  Factory,
-  Shield,
   Menu,
   X,
-  ChevronRight,
   Phone,
   Mail,
   MapPin,
   ArrowRight,
   Globe,
-  Award
+  Award,
+  Settings,
+  ExternalLink
 } from 'lucide-react';
-
-const products = [
-  {
-    title: '電力系統元件',
-    description: '提供高品質、高可靠度的電力系統核心元件，確保電網穩定運行。',
-    icon: Zap,
-    color: 'text-blue-600',
-    bg: 'bg-blue-50',
-  },
-  {
-    title: '變壓器',
-    description: '代理及銷售各類型工業用與配電用變壓器，滿足不同電壓轉換需求。',
-    icon: Battery,
-    color: 'text-orange-600',
-    bg: 'bg-orange-50',
-  },
-  {
-    title: '水力發電廠工程',
-    description: '專業的水力發電廠機電設備安裝、維護與升級工程服務。',
-    icon: Droplet,
-    color: 'text-cyan-600',
-    bg: 'bg-cyan-50',
-  },
-  {
-    title: '變電所工程',
-    description: '涵蓋變電所新建、擴建及設備汰換工程，提供全方位解決方案。',
-    icon: Factory,
-    color: 'text-indigo-600',
-    bg: 'bg-indigo-50',
-  },
-  {
-    title: '變色絕緣套代理',
-    description: '獨家代理具備溫度指示功能之變色絕緣套，提升設備巡檢效率與安全性。',
-    icon: Shield,
-    color: 'text-emerald-600',
-    bg: 'bg-emerald-50',
-  },
-];
-
-const cases = [
-  {
-    title: '蘭陽水力發電廠工程',
-    description: '負責發電機組更新及控制系統升級，大幅提升發電效率與運轉穩定性。',
-    details: '本專案涵蓋了蘭陽水力發電廠的核心機電設備汰舊換新。我們導入了最新一代的數位化控制系統，不僅提高了發電效率，更強化了系統的自我診斷與保護能力。工程期間克服了地形與天候限制，如期達成台電交付的任務。',
-  },
-  {
-    title: '達觀水力發電廠工程',
-    description: '參與新建水力發電廠之核心機電設備安裝與測試，確保工程如期如質完工。',
-    details: '達觀水力發電廠為近年重要的新建綠能建設。豪豐科技負責其中關鍵的發電機組、變壓器及附屬機電設備的安裝與調試。我們動員了具備豐富經驗的工程團隊，嚴格把關施工品質，確保廠區設備在最高安全標準下順利併網發電。',
-  },
-];
+import ProductList from './components/ProductList';
+import CaseList from './components/CaseList';
 
 export default function App() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [selectedCase, setSelectedCase] = useState<typeof cases[0] | null>(null);
 
-  useEffect(() => {
-    if (selectedCase) {
-      document.body.style.overflow = 'hidden';
+  const defaultSheetUrl = 'https://docs.google.com/spreadsheets/d/1sdHSVVOYf47r84f9R7KV8iqWf_q5LMSkLzNMdWdpCi8/edit?usp=sharing';
+  const defaultCaseSheetUrl = 'https://docs.google.com/spreadsheets/d/1FMNk9vTDuV4uyue4of1Db-kjrrgHByoj1rZKD5WvUfA/edit?usp=sharing';
+  const defaultContactSheetUrl = 'https://script.google.com/macros/s/AKfycby76vdP6mGwNj5Zd1zD5mbrfsuAwOvap9xgpvKgubDgcz3x12AxRNfXoeNkf499xMpZ6g/exec';
+  
+  const [sheetUrl, setSheetUrl] = useState(() => {
+    return localStorage.getItem('productSheetUrl') || defaultSheetUrl;
+  });
+  const [caseSheetUrl, setCaseSheetUrl] = useState(() => {
+    return localStorage.getItem('caseSheetUrl') || defaultCaseSheetUrl;
+  });
+  const [contactSheetUrl, setContactSheetUrl] = useState(() => {
+    return localStorage.getItem('contactSheetUrl') || defaultContactSheetUrl;
+  });
+  
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [passwordPromptOpen, setPasswordPromptOpen] = useState(false);
+  const [passwordInput, setPasswordInput] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  
+  const [tempUrl, setTempUrl] = useState(sheetUrl);
+  const [tempCaseUrl, setTempCaseUrl] = useState(caseSheetUrl);
+  const [tempContactUrl, setTempContactUrl] = useState(contactSheetUrl);
+
+  const [contactForm, setContactForm] = useState({
+    companyName: '',
+    contactName: '',
+    phone: '',
+    email: '',
+    description: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  const handleOpenSettings = () => {
+    setPasswordInput('');
+    setPasswordError('');
+    setPasswordPromptOpen(true);
+  };
+
+  const handlePasswordSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (passwordInput === '0928958050') {
+      setPasswordPromptOpen(false);
+      setTempUrl(sheetUrl);
+      setTempCaseUrl(caseSheetUrl);
+      setTempContactUrl(contactSheetUrl);
+      setSettingsOpen(true);
     } else {
-      document.body.style.overflow = 'unset';
+      setPasswordError('密碼錯誤，請重新輸入');
     }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [selectedCase]);
+  };
+
+  const saveSettings = () => {
+    setSheetUrl(tempUrl);
+    localStorage.setItem('productSheetUrl', tempUrl);
+    setCaseSheetUrl(tempCaseUrl);
+    localStorage.setItem('caseSheetUrl', tempCaseUrl);
+    setContactSheetUrl(tempContactUrl);
+    localStorage.setItem('contactSheetUrl', tempContactUrl);
+    setSettingsOpen(false);
+  };
+
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!contactForm.companyName || !contactForm.contactName || !contactForm.phone || !contactForm.email) {
+      alert('請填寫必填欄位');
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
+    try {
+      // Create FormData to send
+      const formData = new FormData();
+      formData.append('companyName', contactForm.companyName);
+      formData.append('contactName', contactForm.contactName);
+      formData.append('phone', contactForm.phone);
+      formData.append('email', contactForm.email);
+      formData.append('description', contactForm.description);
+      formData.append('timestamp', new Date().toISOString());
+
+      // If the URL is a Google Apps Script Web App, we can send data to it.
+      if (contactSheetUrl.includes('script.google.com')) {
+        // Construct query parameters for GET request
+        const params = new URLSearchParams();
+        params.append('companyName', contactForm.companyName);
+        params.append('contactName', contactForm.contactName);
+        params.append('phone', contactForm.phone);
+        params.append('email', contactForm.email);
+        params.append('description', contactForm.description);
+        params.append('timestamp', new Date().toISOString());
+
+        const urlWithParams = `${contactSheetUrl}?${params.toString()}`;
+
+        await fetch(urlWithParams, {
+          method: 'GET',
+          mode: 'no-cors'
+        });
+      } else {
+        // Simulate network delay for standard sheet URL
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        console.warn("Notice: To actually write data, please deploy a Google Apps Script Web App and use its URL.");
+      }
+      
+      setSubmitSuccess(true);
+      setContactForm({
+        companyName: '',
+        contactName: '',
+        phone: '',
+        email: '',
+        description: ''
+      });
+      
+      setTimeout(() => {
+        setSubmitSuccess(false);
+      }, 5000);
+      
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('提交失敗，請稍後再試。');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -101,11 +161,11 @@ export default function App() {
         }`}
       >
         <div className="container mx-auto px-4 md:px-6 flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-blue-700 rounded-lg flex items-center justify-center text-white font-bold text-xl">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 md:w-16 md:h-16 bg-blue-700 rounded-xl flex items-center justify-center text-white font-black text-2xl md:text-4xl">
               豪
             </div>
-            <span className="text-2xl font-bold text-blue-900 tracking-tight">
+            <span className="text-3xl md:text-5xl font-black text-blue-900 tracking-tight">
               豪豐科技有限公司
             </span>
           </div>
@@ -119,15 +179,30 @@ export default function App() {
             <a href="#contact" className="bg-blue-700 text-white px-5 py-2 rounded-full hover:bg-blue-800 transition-colors font-medium">
               聯絡我們
             </a>
+            <button 
+              onClick={handleOpenSettings}
+              className="text-gray-500 hover:text-blue-700 transition-colors p-2"
+              title="系統設定"
+            >
+              <Settings size={20} />
+            </button>
           </nav>
 
           {/* Mobile Menu Toggle */}
-          <button
-            className="md:hidden text-gray-700 p-2"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          <div className="flex items-center gap-2 md:hidden">
+            <button 
+              onClick={handleOpenSettings}
+              className="text-gray-500 hover:text-blue-700 transition-colors p-2"
+            >
+              <Settings size={20} />
+            </button>
+            <button
+              className="text-gray-700 p-2"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Nav */}
@@ -208,36 +283,14 @@ export default function App() {
       <section id="products" className="py-20 bg-white">
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-blue-900 mb-4">產品與工程服務</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-blue-900 mb-4">產品與服務</h2>
             <div className="w-20 h-1 bg-orange-500 mx-auto mb-6"></div>
             <p className="text-gray-600 text-lg">
               我們提供從核心元件代理到大型發電廠工程的全方位解決方案，滿足工業與基礎建設的嚴苛要求。
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {products.map((product, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-white rounded-2xl p-8 shadow-lg shadow-gray-200/50 border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all group"
-              >
-                <div className={`w-16 h-16 rounded-xl ${product.bg} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
-                  <product.icon className={`w-8 h-8 ${product.color}`} />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">{product.title}</h3>
-                <p className="text-gray-600 leading-relaxed mb-6">
-                  {product.description}
-                </p>
-                <a href="#contact" className="inline-flex items-center text-blue-700 font-medium hover:text-blue-800 group-hover:gap-2 transition-all">
-                  了解更多 <ChevronRight size={16} className="ml-1" />
-                </a>
-              </motion.div>
-            ))}
-          </div>
+          <ProductList sheetUrl={sheetUrl} />
         </div>
       </section>
 
@@ -252,40 +305,9 @@ export default function App() {
                 憑藉深厚的工程實力與專案管理經驗，我們成功參與多項國家級基礎建設，深獲客戶信賴。
               </p>
             </div>
-            <a href="#contact" className="hidden md:inline-flex items-center text-blue-700 font-medium hover:text-blue-800 transition-colors">
-              查看所有案例 <ArrowRight size={16} className="ml-2" />
-            </a>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {cases.map((item, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.2 }}
-                className="bg-white rounded-2xl overflow-hidden shadow-lg shadow-gray-200/50 group cursor-pointer"
-                onClick={() => setSelectedCase(item)}
-              >
-                <div className="p-8 relative">
-                  <div className="absolute top-8 right-8 w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300">
-                    <Award size={24} />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3">{item.title}</h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    {item.description}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-          
-          <div className="mt-8 text-center md:hidden">
-            <a href="#contact" className="inline-flex items-center text-blue-700 font-medium hover:text-blue-800 transition-colors">
-              查看所有案例 <ArrowRight size={16} className="ml-2" />
-            </a>
-          </div>
+          <CaseList sheetUrl={caseSheetUrl} />
         </div>
       </section>
 
@@ -323,33 +345,80 @@ export default function App() {
             
             <div className="bg-white rounded-2xl p-8 shadow-2xl">
               <h3 className="text-2xl font-bold text-gray-900 mb-6">立即與我們聯繫</h3>
-              <form className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">公司名稱</label>
-                  <input type="text" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" placeholder="請輸入您的公司名稱" />
+              {submitSuccess ? (
+                <div className="bg-green-50 border border-green-200 text-green-700 rounded-lg p-6 text-center">
+                  <h4 className="text-lg font-bold mb-2">送出成功！</h4>
+                  <p>我們已收到您的訊息，將會盡快與您聯繫。</p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              ) : (
+                <form className="space-y-4" onSubmit={handleContactSubmit}>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">聯絡人姓名</label>
-                    <input type="text" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" placeholder="王小明" />
+                    <label className="block text-sm font-medium text-gray-700 mb-1">公司名稱 <span className="text-red-500">*</span></label>
+                    <input 
+                      type="text" 
+                      required
+                      value={contactForm.companyName}
+                      onChange={(e) => setContactForm({...contactForm, companyName: e.target.value})}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" 
+                      placeholder="請輸入您的公司名稱" 
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">聯絡人姓名 <span className="text-red-500">*</span></label>
+                      <input 
+                        type="text" 
+                        required
+                        value={contactForm.contactName}
+                        onChange={(e) => setContactForm({...contactForm, contactName: e.target.value})}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" 
+                        placeholder="王小明" 
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">聯絡電話 <span className="text-red-500">*</span></label>
+                      <input 
+                        type="tel" 
+                        required
+                        value={contactForm.phone}
+                        onChange={(e) => setContactForm({...contactForm, phone: e.target.value})}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" 
+                        placeholder="02-1234-5678" 
+                      />
+                    </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">聯絡電話</label>
-                    <input type="tel" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" placeholder="02-1234-5678" />
+                    <label className="block text-sm font-medium text-gray-700 mb-1">電子郵件 <span className="text-red-500">*</span></label>
+                    <input 
+                      type="email" 
+                      required
+                      value={contactForm.email}
+                      onChange={(e) => setContactForm({...contactForm, email: e.target.value})}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" 
+                      placeholder="example@company.com" 
+                    />
                   </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">電子郵件</label>
-                  <input type="email" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" placeholder="example@company.com" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">需求說明</label>
-                  <textarea rows={4} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none" placeholder="請簡述您的需求或想了解的產品..."></textarea>
-                </div>
-                <button type="button" className="w-full bg-blue-700 hover:bg-blue-800 text-white font-medium py-3 rounded-lg transition-colors">
-                  送出表單
-                </button>
-              </form>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">需求說明</label>
+                    <textarea 
+                      rows={4} 
+                      value={contactForm.description}
+                      onChange={(e) => setContactForm({...contactForm, description: e.target.value})}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none" 
+                      placeholder="請簡述您的需求或想了解的產品..."
+                    ></textarea>
+                  </div>
+                  <button 
+                    type="submit" 
+                    disabled={isSubmitting}
+                    className={`w-full font-medium py-3 rounded-lg transition-colors ${
+                      isSubmitting ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-700 hover:bg-blue-800 text-white'
+                    }`}
+                  >
+                    {isSubmitting ? '處理中...' : '送出表單'}
+                  </button>
+                </form>
+              )}
             </div>
           </div>
         </div>
@@ -436,46 +505,195 @@ export default function App() {
         </div>
       </footer>
 
-      {/* Case Details Modal */}
+      {/* Password Prompt Modal */}
       <AnimatePresence>
-        {selectedCase && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6"
-          >
-            {/* Backdrop */}
-            <div 
-              className="absolute inset-0 bg-black/70 backdrop-blur-sm"
-              onClick={() => setSelectedCase(null)}
-            ></div>
-            
-            {/* Modal Content */}
+        {passwordPromptOpen && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setPasswordPromptOpen(false)}
+            />
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col"
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-sm relative z-10 overflow-hidden"
             >
-              {/* Close Button */}
-              <button 
-                onClick={() => setSelectedCase(null)}
-                className="absolute top-4 right-4 z-10 w-10 h-10 bg-black/20 hover:bg-black/40 text-white rounded-full flex items-center justify-center backdrop-blur-md transition-colors"
-              >
-                <X size={20} />
-              </button>
-
-              <div className="overflow-y-auto p-6 sm:p-8">
-                <h3 className="text-3xl font-bold text-gray-900 mb-4">{selectedCase.title}</h3>
-                <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                  {selectedCase.details}
-                </p>
+              <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+                <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                  <Settings size={20} className="text-blue-700" />
+                  系統設定
+                </h3>
+                <button
+                  onClick={() => setPasswordPromptOpen(false)}
+                  className="text-gray-400 hover:text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-full p-2 transition-colors"
+                >
+                  <X size={20} />
+                </button>
               </div>
+              <form onSubmit={handlePasswordSubmit} className="p-6">
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    請輸入管理員密碼
+                  </label>
+                  <input
+                    type="password"
+                    value={passwordInput}
+                    onChange={(e) => setPasswordInput(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    placeholder="輸入密碼"
+                    autoFocus
+                  />
+                  {passwordError && (
+                    <p className="text-sm text-red-500 mt-2">{passwordError}</p>
+                  )}
+                </div>
+                <div className="flex justify-end gap-3 mt-6">
+                  <button
+                    type="button"
+                    onClick={() => setPasswordPromptOpen(false)}
+                    className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors font-medium"
+                  >
+                    取消
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-6 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-lg transition-colors font-medium shadow-md"
+                  >
+                    確認
+                  </button>
+                </div>
+              </form>
             </motion.div>
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
+
+      {/* Settings Modal */}
+      <AnimatePresence>
+        {settingsOpen && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setSettingsOpen(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-lg relative z-10 overflow-hidden"
+            >
+              <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+                <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                  <Settings size={20} className="text-blue-700" />
+                  系統設定
+                </h3>
+                <button
+                  onClick={() => setSettingsOpen(false)}
+                  className="text-gray-400 hover:text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-full p-2 transition-colors"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              <div className="p-6">
+                <div className="mb-6">
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      產品列表 Google Sheet URL
+                    </label>
+                    <a 
+                      href={tempUrl || defaultSheetUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1 font-medium transition-colors"
+                    >
+                      <ExternalLink size={14} /> 前往修改資料
+                    </a>
+                  </div>
+                  <input
+                    type="text"
+                    value={tempUrl}
+                    onChange={(e) => setTempUrl(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    placeholder="https://docs.google.com/spreadsheets/d/..."
+                  />
+                  <p className="text-xs text-gray-500 mt-2">
+                    請確保試算表已設定為「知道連結的使用者皆可查看」，且包含「分類」、「產品」、「圖檔」三個欄位。
+                  </p>
+                </div>
+                <div className="mb-6">
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      成功案例 Google Sheet URL
+                    </label>
+                    <a 
+                      href={tempCaseUrl || defaultCaseSheetUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1 font-medium transition-colors"
+                    >
+                      <ExternalLink size={14} /> 前往修改資料
+                    </a>
+                  </div>
+                  <input
+                    type="text"
+                    value={tempCaseUrl}
+                    onChange={(e) => setTempCaseUrl(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    placeholder="https://docs.google.com/spreadsheets/d/..."
+                  />
+                  <p className="text-xs text-gray-500 mt-2">
+                    請確保試算表已設定為「知道連結的使用者皆可查看」，且包含「案場」、「圖檔」兩個欄位。
+                  </p>
+                </div>
+                <div className="mb-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      聯絡表單 Google Apps Script URL
+                    </label>
+                    <a 
+                      href={tempContactUrl || defaultContactSheetUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1 font-medium transition-colors"
+                    >
+                      <ExternalLink size={14} /> 查看試算表
+                    </a>
+                  </div>
+                  <input
+                    type="text"
+                    value={tempContactUrl}
+                    onChange={(e) => setTempContactUrl(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    placeholder="https://script.google.com/macros/s/..."
+                  />
+                </div>
+                <div className="flex justify-end gap-3 mt-8">
+                  <button
+                    onClick={() => setSettingsOpen(false)}
+                    className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors font-medium"
+                  >
+                    取消
+                  </button>
+                  <button
+                    onClick={saveSettings}
+                    className="px-6 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-lg transition-colors font-medium shadow-md"
+                  >
+                    儲存設定
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 }
