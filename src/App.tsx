@@ -59,18 +59,41 @@ const cases = [
   {
     title: '蘭陽水力發電廠工程',
     description: '負責發電機組更新及控制系統升級，大幅提升發電效率與運轉穩定性。',
-    image: 'https://picsum.photos/seed/hydro1/800/600',
+    details: '本專案涵蓋了蘭陽水力發電廠的核心機電設備汰舊換新。我們導入了最新一代的數位化控制系統，不僅提高了發電效率，更強化了系統的自我診斷與保護能力。工程期間克服了地形與天候限制，如期達成台電交付的任務。',
+    gallery: [
+      'https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1466611653911-95081537e5b7?auto=format&fit=crop&w=1200&q=80'
+    ]
   },
   {
     title: '達觀水力發電廠工程',
     description: '參與新建水力發電廠之核心機電設備安裝與測試，確保工程如期如質完工。',
-    image: 'https://picsum.photos/seed/hydro2/800/600',
+    details: '達觀水力發電廠為近年重要的新建綠能建設。豪豐科技負責其中關鍵的發電機組、變壓器及附屬機電設備的安裝與調試。我們動員了具備豐富經驗的工程團隊，嚴格把關施工品質，確保廠區設備在最高安全標準下順利併網發電。',
+    gallery: [
+      'https://images.unsplash.com/photo-1584483751070-07755866b6c0?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&w=1200&q=80'
+    ]
   },
 ];
 
 export default function App() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [selectedCase, setSelectedCase] = useState<typeof cases[0] | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (selectedCase || selectedImage) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [selectedCase, selectedImage]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -143,13 +166,15 @@ export default function App() {
       <section id="home" className="relative pt-24 pb-16 md:pt-32 md:pb-24 lg:pt-40 lg:pb-32 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
-            src="https://picsum.photos/seed/powerplant/1920/1080"
-            alt="Power Plant Background"
+            src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1920&q=80"
+            alt="Tech Power Background"
             className="w-full h-full object-cover"
             referrerPolicy="no-referrer"
           />
-          <div className="absolute inset-0 bg-blue-900/70 mix-blend-multiply"></div>
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-900/90 to-transparent"></div>
+          <div className="absolute inset-0 bg-blue-900/80 mix-blend-multiply"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-900/90 via-blue-900/60 to-transparent"></div>
+          {/* Tech Grid Overlay */}
+          <div className="absolute inset-0 opacity-30" style={{ backgroundImage: 'radial-gradient(#60a5fa 1px, transparent 1px)', backgroundSize: '32px 32px' }}></div>
         </div>
         
         <div className="container mx-auto px-4 md:px-6 relative z-10">
@@ -252,18 +277,10 @@ export default function App() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.2 }}
                 className="bg-white rounded-2xl overflow-hidden shadow-lg shadow-gray-200/50 group cursor-pointer"
+                onClick={() => setSelectedCase(item)}
               >
-                <div className="relative h-64 overflow-hidden">
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    referrerPolicy="no-referrer"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                </div>
                 <div className="p-8 relative">
-                  <div className="absolute -top-6 right-8 w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white shadow-lg transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                  <div className="absolute top-8 right-8 w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300">
                     <Award size={24} />
                   </div>
                   <h3 className="text-2xl font-bold text-gray-900 mb-3">{item.title}</h3>
@@ -303,15 +320,15 @@ export default function App() {
               <p className="text-blue-100 text-lg leading-relaxed mb-8">
                 我們是一支專注於電力工程與設備代理的專業團隊。多年來，我們秉持著「專業、誠信、創新」的理念，為國內外客戶提供最優質的服務。從設備選型、系統設計到工程施工，我們都能提供一站式的解決方案。
               </p>
-              <div className="grid grid-cols-2 gap-6">
-                <div>
-                  <div className="text-4xl font-bold text-orange-400 mb-2">20+</div>
-                  <div className="text-blue-200">年產業經驗</div>
-                </div>
-                <div>
-                  <div className="text-4xl font-bold text-orange-400 mb-2">100+</div>
-                  <div className="text-blue-200">成功專案</div>
-                </div>
+              <div className="bg-blue-800/50 rounded-xl p-6 border border-blue-700/50 mt-8">
+                <h4 className="text-white font-bold mb-4 border-b border-blue-700/50 pb-2">公司基本資料</h4>
+                <ul className="space-y-3 text-blue-100 text-sm md:text-base">
+                  <li className="flex"><span className="w-24 shrink-0 text-blue-300">公司名稱：</span><span>豪豐科技有限公司<br/><span className="text-sm text-blue-200">HFGET Corporation</span></span></li>
+                  <li className="flex"><span className="w-24 shrink-0 text-blue-300">統一編號：</span><span>42945830</span></li>
+                  <li className="flex"><span className="w-24 shrink-0 text-blue-300">負責人：</span><span>呂家宏</span></li>
+                  <li className="flex"><span className="w-24 shrink-0 text-blue-300">設立日期：</span><span>2018年3月14日</span></li>
+                  <li className="flex"><span className="w-24 shrink-0 text-blue-300">資本總額：</span><span>新台幣 15,000,000 元</span></li>
+                </ul>
               </div>
             </div>
             
@@ -358,9 +375,12 @@ export default function App() {
                 <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white font-bold text-sm">
                   豪
                 </div>
-                <span className="text-xl font-bold text-white tracking-tight">
-                  豪豐科技有限公司
-                </span>
+                <div className="flex flex-col">
+                  <span className="text-xl font-bold text-white tracking-tight">
+                    豪豐科技有限公司
+                  </span>
+                  <span className="text-xs text-gray-400">HFGET Corporation</span>
+                </div>
               </div>
               <p className="text-gray-400 text-sm leading-relaxed mb-6">
                 專業電力系統元件代理與工程服務供應商，致力於提供穩定、安全、高效的能源解決方案。
@@ -398,7 +418,10 @@ export default function App() {
               <ul className="space-y-4">
                 <li className="flex items-start gap-3">
                   <MapPin size={20} className="text-blue-500 shrink-0 mt-1" />
-                  <span>100 台北市中正區重慶南路一段123號</span>
+                  <span className="leading-relaxed">
+                    35144 苗栗縣頭份市上埔里4鄰中正一路139號9樓<br/>
+                    <span className="text-sm text-gray-500">9 F., No. 139, Zhongzheng 1st Rd., Toufen City, Miaoli County</span>
+                  </span>
                 </li>
                 <li className="flex items-center gap-3">
                   <Phone size={20} className="text-blue-500 shrink-0" />
@@ -423,6 +446,106 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      {/* Case Details Modal */}
+      <AnimatePresence>
+        {selectedCase && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6"
+          >
+            {/* Backdrop */}
+            <div 
+              className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+              onClick={() => setSelectedCase(null)}
+            ></div>
+            
+            {/* Modal Content */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col"
+            >
+              {/* Close Button */}
+              <button 
+                onClick={() => setSelectedCase(null)}
+                className="absolute top-4 right-4 z-10 w-10 h-10 bg-black/20 hover:bg-black/40 text-white rounded-full flex items-center justify-center backdrop-blur-md transition-colors"
+              >
+                <X size={20} />
+              </button>
+
+              <div className="overflow-y-auto p-6 sm:p-8">
+                <h3 className="text-3xl font-bold text-gray-900 mb-4">{selectedCase.title}</h3>
+                <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+                  {selectedCase.details}
+                </p>
+
+                {selectedCase.gallery && selectedCase.gallery.length > 0 && (
+                  <div>
+                    <h4 className="text-xl font-bold text-gray-900 mb-4">專案圖集</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {selectedCase.gallery.map((img, idx) => (
+                        <div 
+                          key={idx} 
+                          className="relative aspect-video rounded-lg overflow-hidden cursor-pointer group"
+                          onClick={() => setSelectedImage(img)}
+                        >
+                          <img 
+                            src={img} 
+                            alt={`${selectedCase.title} - Image ${idx + 1}`} 
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                            referrerPolicy="no-referrer"
+                          />
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                            <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity font-medium">點擊放大</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Fullscreen Image Lightbox */}
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[110] flex items-center justify-center bg-black/90 p-4 sm:p-8"
+            onClick={() => setSelectedImage(null)}
+          >
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedImage(null);
+              }}
+              className="absolute top-4 right-4 sm:top-8 sm:right-8 z-10 w-12 h-12 bg-white/10 hover:bg-white/20 text-white rounded-full flex items-center justify-center backdrop-blur-md transition-colors"
+            >
+              <X size={24} />
+            </button>
+            <motion.img 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              src={selectedImage} 
+              alt="Full resolution" 
+              className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+              referrerPolicy="no-referrer"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
